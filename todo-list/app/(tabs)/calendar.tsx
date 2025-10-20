@@ -27,8 +27,6 @@ export default function CalendarTab() {
 
       const updatedTasks = [...existingTasks, newTask];
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
-
-      alert("Task added! Go to Tasks tab to see it.");
     } catch (error) {
       console.error("Error saving task:", error);
     }
