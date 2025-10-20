@@ -30,7 +30,8 @@ export default function TasksTab() {
         const sampleTasks = [
           {
             id: "1",
-            title: "Long press to delete the task...",
+            title:
+              "Long press to arranges tasks, swipe left to delete, swipe right to edit...",
             completed: false,
           },
         ];
