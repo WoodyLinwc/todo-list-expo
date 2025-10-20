@@ -25,6 +25,7 @@ interface Task {
   id: string;
   title: string;
   completed: boolean;
+  completedAt?: string; // ISO date string
 }
 
 export default function TasksTab() {
@@ -79,6 +80,21 @@ export default function TasksTab() {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
     } catch (error) {
       console.error("Error updating task:", error);
+    }
+  };
+
+  const completeTask = async (id: string) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id
+        ? { ...task, completed: true, completedAt: new Date().toISOString() }
+        : task
+    );
+    setTasks(updatedTasks);
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
+    } catch (error) {
+      console.error("Error completing task:", error);
     }
   };
 
@@ -156,13 +172,22 @@ export default function TasksTab() {
   };
 
   const handleDragEnd = async ({ data }: { data: Task[] }) => {
-    setTasks(data);
+    // Get the completed tasks that aren't being reordered
+    const completedTasksOnly = tasks.filter((task) => task.completed);
+
+    // Combine reordered incomplete tasks with completed tasks
+    const allTasks = [...data, ...completedTasksOnly];
+
+    setTasks(allTasks);
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(allTasks));
     } catch (error) {
       console.error("Error saving reordered tasks:", error);
     }
   };
+
+  // Filter to show only incomplete tasks
+  const incompleteTasks = tasks.filter((task) => !task.completed);
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<Task>) => {
     return (
@@ -171,7 +196,7 @@ export default function TasksTab() {
           item={item}
           onToggle={toggleTask}
           onEdit={startEdit}
-          onComplete={deleteTask}
+          onComplete={completeTask}
           onLongPress={drag}
           isActive={isActive}
         />
@@ -191,12 +216,12 @@ export default function TasksTab() {
               variant="bodyMedium"
               style={{ color: theme.colors.secondary }}
             >
-              {tasks.length} tasks
+              {incompleteTasks.length} active tasks
             </Text>
           </Card.Content>
         </Card>
 
-        {tasks.length === 0 ? (
+        {incompleteTasks.length === 0 ? (
           <View
             style={{
               flex: 1,
@@ -254,7 +279,7 @@ export default function TasksTab() {
           </View>
         ) : (
           <DraggableFlatList
-            data={tasks}
+            data={incompleteTasks}
             onDragEnd={handleDragEnd}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
