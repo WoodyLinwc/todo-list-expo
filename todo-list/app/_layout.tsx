@@ -12,10 +12,9 @@ export default function RootLayout() {
         }}
       />
       <Drawer.Screen
-        name="calendar"
+        name="settings"
         options={{
-          headerShown: false,
-          title: "Calendar",
+          title: "Settings",
         }}
       />
     </Drawer>
