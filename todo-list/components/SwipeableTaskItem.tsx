@@ -62,7 +62,7 @@ export default function SwipeableTaskItem({
     return (
       <View
         style={{
-          backgroundColor: theme.colors.error,
+          backgroundColor: theme.colors.primaryContainer,
           justifyContent: "center",
           alignItems: "flex-end",
           paddingRight: 20,
@@ -78,7 +78,7 @@ export default function SwipeableTaskItem({
             fontWeight: "600",
           }}
         >
-          🗑️ Delete
+          💯 Complete
         </Reanimated.Text>
       </View>
     );
@@ -121,12 +121,6 @@ export default function SwipeableTaskItem({
               ? theme.colors.secondary
               : theme.colors.onSurface,
           }}
-          left={() => (
-            <Checkbox
-              status={item.completed ? "checked" : "unchecked"}
-              onPress={() => onToggle(item.id)}
-            />
-          )}
         />
       </Card>
     </Swipeable>
