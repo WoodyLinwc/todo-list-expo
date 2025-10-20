@@ -188,6 +188,26 @@ export default function TasksTab() {
           >
             Tap the + button to add your first task
           </Text>
+          <Text
+            variant="bodyMedium"
+            style={{
+              color: theme.colors.secondary,
+              textAlign: "center",
+              marginTop: 8,
+            }}
+          >
+            Long press to re-arrange tasks order
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={{
+              color: theme.colors.secondary,
+              textAlign: "center",
+              marginTop: 8,
+            }}
+          >
+            Swipe left to delete, right to edit
+          </Text>
         </View>
       ) : (
         <FlatList
