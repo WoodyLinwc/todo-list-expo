@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { View } from "react-native";
-import { Card, List, Checkbox, useTheme } from "react-native-paper";
+import { Card, List, useTheme } from "react-native-paper";
 import Swipeable, {
   SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -112,16 +112,7 @@ export default function SwipeableTaskItem({
         }}
         onLongPress={onLongPress}
       >
-        <List.Item
-          title={item.title}
-          titleNumberOfLines={3}
-          titleStyle={{
-            textDecorationLine: item.completed ? "line-through" : "none",
-            color: item.completed
-              ? theme.colors.secondary
-              : theme.colors.onSurface,
-          }}
-        />
+        <List.Item title={item.title} titleNumberOfLines={3} />
       </Card>
     </Swipeable>
   );
