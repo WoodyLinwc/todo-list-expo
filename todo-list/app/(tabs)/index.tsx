@@ -1,12 +1,9 @@
-import { View, FlatList, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
 import {
   Card,
-  List,
-  Checkbox,
-  IconButton,
   Text,
   Button,
   Portal,
@@ -14,7 +11,13 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
+import DraggableFlatList, {
+  ScaleDecorator,
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import FloatingAddButton from "../../components/FloatingAddButton";
+import SwipeableTaskItem from "../../components/SwipeableTaskItem";
 
 const STORAGE_KEY = "@todos";
 
@@ -135,143 +138,152 @@ export default function TasksTab() {
     );
   };
 
-  const completedCount = tasks.filter((t) => t.completed).length;
+  const handleDragEnd = async ({ data }: { data: Task[] }) => {
+    setTasks(data);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving reordered tasks:", error);
+    }
+  };
+
+  const renderItem = ({ item, drag, isActive }: RenderItemParams<Task>) => {
+    return (
+      <ScaleDecorator>
+        <SwipeableTaskItem
+          item={item}
+          onToggle={toggleTask}
+          onEdit={startEdit}
+          onDelete={deleteTask}
+          onLongPress={drag}
+          isActive={isActive}
+        />
+      </ScaleDecorator>
+    );
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <Card style={{ margin: 16, marginBottom: 8 }}>
-        <Card.Content>
-          <Text variant="headlineSmall" style={{ marginBottom: 8 }}>
-            My Tasks
-          </Text>
-          <Text variant="bodyMedium" style={{ color: theme.colors.secondary }}>
-            {completedCount} of {tasks.length} completed
-          </Text>
-        </Card.Content>
-      </Card>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <Card style={{ margin: 16, marginBottom: 8 }}>
+          <Card.Content>
+            <Text variant="headlineSmall" style={{ marginBottom: 8 }}>
+              My Tasks
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{ color: theme.colors.secondary }}
+            >
+              {tasks.length} tasks
+            </Text>
+          </Card.Content>
+        </Card>
 
-      {tasks.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 32,
-          }}
-        >
-          <Text
-            variant="titleMedium"
-            style={{ color: theme.colors.secondary, textAlign: "center" }}
-          >
-            No tasks yet!
-          </Text>
-          <Text
-            variant="bodyMedium"
+        {tasks.length === 0 ? (
+          <View
             style={{
-              color: theme.colors.secondary,
-              textAlign: "center",
-              marginTop: 8,
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 32,
             }}
           >
-            Tap the + button to add your first task
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{
-              color: theme.colors.secondary,
-              textAlign: "center",
-              marginTop: 8,
+            <Text
+              variant="titleMedium"
+              style={{ color: theme.colors.secondary, textAlign: "center" }}
+            >
+              No tasks yet!
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Tap the + button to add your first task
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Swipe left to right to edit
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Swipe right to left to delete
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Long press to reorder tasks
+            </Text>
+          </View>
+        ) : (
+          <DraggableFlatList
+            data={tasks}
+            onDragEnd={handleDragEnd}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={{
+              paddingBottom: 100,
             }}
-          >
-            Long press to re-arrange tasks order
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{
-              color: theme.colors.secondary,
-              textAlign: "center",
-              marginTop: 8,
-            }}
-          >
-            Swipe left to delete, right to edit
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={tasks}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 100 }}
-          renderItem={({ item }) => (
-            <Card style={{ marginHorizontal: 8, marginVertical: 4 }}>
-              <List.Item
-                title={item.title}
-                titleNumberOfLines={3}
-                titleStyle={{
-                  textDecorationLine: item.completed ? "line-through" : "none",
-                  color: item.completed
-                    ? theme.colors.secondary
-                    : theme.colors.onSurface,
-                }}
-                left={() => (
-                  <Checkbox
-                    status={item.completed ? "checked" : "unchecked"}
-                    onPress={() => toggleTask(item.id)}
-                  />
-                )}
-                right={() => (
-                  <View style={{ flexDirection: "row" }}>
-                    <IconButton
-                      icon="pencil"
-                      size={20}
-                      onPress={() => startEdit(item)}
-                    />
-                    <IconButton
-                      icon="delete"
-                      size={20}
-                      iconColor={theme.colors.error}
-                      onPress={() => deleteTask(item.id)}
-                    />
-                  </View>
-                )}
-              />
-            </Card>
-          )}
-        />
-      )}
+          />
+        )}
 
-      {tasks.length > 0 && (
-        <View style={{ padding: 16, paddingBottom: 80 }}>
-          <Button
-            mode="outlined"
-            onPress={deleteAllTasks}
-            textColor={theme.colors.error}
-            style={{ borderColor: theme.colors.error }}
-          >
-            Delete All Tasks
-          </Button>
-        </View>
-      )}
-
-      <FloatingAddButton onAddTask={addTask} />
-
-      <Portal>
-        <Dialog visible={!!editingTask} onDismiss={() => setEditingTask(null)}>
-          <Dialog.Title>Edit Task</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              value={editText}
-              onChangeText={setEditText}
+        {tasks.length > 0 && (
+          <View style={{ padding: 16, paddingBottom: 80 }}>
+            <Button
               mode="outlined"
-              placeholder="Task title"
-              autoFocus
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setEditingTask(null)}>Cancel</Button>
-            <Button onPress={saveEdit}>Save</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </View>
+              onPress={deleteAllTasks}
+              textColor={theme.colors.error}
+              style={{ borderColor: theme.colors.error }}
+            >
+              Delete All Tasks
+            </Button>
+          </View>
+        )}
+
+        <FloatingAddButton onAddTask={addTask} />
+
+        <Portal>
+          <Dialog
+            visible={!!editingTask}
+            onDismiss={() => setEditingTask(null)}
+          >
+            <Dialog.Title>Edit Task</Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                value={editText}
+                onChangeText={setEditText}
+                mode="outlined"
+                placeholder="Task title"
+                autoFocus
+              />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setEditingTask(null)}>Cancel</Button>
+              <Button onPress={saveEdit}>Save</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+    </GestureHandlerRootView>
   );
 }

@@ -47,7 +47,7 @@ export default function FloatingAddButton({ onAddTask }: Props) {
             <TextInput
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Enter task title"
+              placeholder="Enter a task"
               mode="outlined"
               autoFocus
               onSubmitEditing={handleAdd}
