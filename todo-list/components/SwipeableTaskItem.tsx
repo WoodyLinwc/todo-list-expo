@@ -16,7 +16,7 @@ interface SwipeableTaskItemProps {
   item: Task;
   onToggle: (id: string) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onComplete: (id: string) => void;
   onLongPress: () => void;
   isActive: boolean;
 }
@@ -25,7 +25,7 @@ export default function SwipeableTaskItem({
   item,
   onToggle,
   onEdit,
-  onDelete,
+  onComplete,
   onLongPress,
   isActive,
 }: SwipeableTaskItemProps) {
@@ -50,7 +50,7 @@ export default function SwipeableTaskItem({
             fontWeight: "600",
           }}
         >
-          ✏️ Edit
+          Edit
         </Reanimated.Text>
       </View>
     );
@@ -60,7 +60,7 @@ export default function SwipeableTaskItem({
     return (
       <View
         style={{
-          backgroundColor: theme.colors.error,
+          backgroundColor: "#4CAF50",
           justifyContent: "center",
           alignItems: "flex-end",
           paddingRight: 20,
@@ -74,7 +74,7 @@ export default function SwipeableTaskItem({
             fontWeight: "600",
           }}
         >
-          🗑️ Delete
+          Complete
         </Reanimated.Text>
       </View>
     );
@@ -95,8 +95,8 @@ export default function SwipeableTaskItem({
             onEdit(item);
           }, 50);
         } else if (direction === "left") {
-          // Swipe right to left = delete
-          onDelete(item.id);
+          // Swipe right to left = complete task
+          onComplete(item.id);
         }
       }}
       overshootLeft={false}
