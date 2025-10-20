@@ -40,9 +40,7 @@ export default function SwipeableTaskItem({
           justifyContent: "center",
           alignItems: "flex-start",
           paddingLeft: 20,
-          flex: 1,
-          borderRadius: 8,
-          marginHorizontal: 8,
+          width: 100,
           marginVertical: 4,
         }}
       >
@@ -62,13 +60,11 @@ export default function SwipeableTaskItem({
     return (
       <View
         style={{
-          backgroundColor: theme.colors.primaryContainer,
+          backgroundColor: theme.colors.error,
           justifyContent: "center",
           alignItems: "flex-end",
           paddingRight: 20,
-          flex: 1,
-          borderRadius: 8,
-          marginHorizontal: 8,
+          width: 100,
           marginVertical: 4,
         }}
       >
@@ -78,7 +74,7 @@ export default function SwipeableTaskItem({
             fontWeight: "600",
           }}
         >
-          💯 Complete
+          🗑️ Delete
         </Reanimated.Text>
       </View>
     );
@@ -97,11 +93,14 @@ export default function SwipeableTaskItem({
           // Swipe right to left = delete
           onDelete(item.id);
         }
-        // Close the swipeable after action
-        setTimeout(() => swipeableRef.current?.close(), 100);
+        // Close the swipeable immediately
+        swipeableRef.current?.close();
       }}
       overshootLeft={false}
       overshootRight={false}
+      friction={2}
+      leftThreshold={80}
+      rightThreshold={80}
     >
       <Card
         style={{
