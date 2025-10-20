@@ -212,27 +212,27 @@ export default function TasksTab() {
                 marginTop: 8,
               }}
             >
-              Swipe left to right to edit
-            </Text>
-            <Text
-              variant="bodyMedium"
-              style={{
-                color: theme.colors.secondary,
-                textAlign: "center",
-                marginTop: 8,
-              }}
-            >
-              Swipe right to left to delete
-            </Text>
-            <Text
-              variant="bodyMedium"
-              style={{
-                color: theme.colors.secondary,
-                textAlign: "center",
-                marginTop: 8,
-              }}
-            >
               Long press to reorder tasks
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Swipe right to edit
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: theme.colors.secondary,
+                textAlign: "center",
+                marginTop: 8,
+              }}
+            >
+              Swipe left to delete
             </Text>
           </View>
         ) : (
