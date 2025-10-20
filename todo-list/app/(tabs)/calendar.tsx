@@ -1,5 +1,6 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Card, Text, useTheme, Banner } from "react-native-paper";
 import FloatingAddButton from "../../components/FloatingAddButton";
 
 const STORAGE_KEY = "@todos";
@@ -11,23 +12,20 @@ interface Task {
 }
 
 export default function CalendarTab() {
+  const theme = useTheme();
+
   const handleAddTask = async (title: string) => {
     try {
-      // Load existing tasks
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       const existingTasks: Task[] = jsonValue ? JSON.parse(jsonValue) : [];
 
-      // Create new task
       const newTask: Task = {
         id: Date.now().toString(),
         title,
         completed: false,
       };
 
-      // Add to existing tasks
       const updatedTasks = [...existingTasks, newTask];
-
-      // Save back to storage
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
 
       alert("Task added! Go to Tasks tab to see it.");
@@ -37,9 +35,43 @@ export default function CalendarTab() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24 }}>Calendar</Text>
-      <Text>Calendar view coming soon...</Text>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <Card style={{ margin: 16 }}>
+        <Card.Content>
+          <Text variant="headlineSmall" style={{ marginBottom: 8 }}>
+            Calendar
+          </Text>
+          <Text variant="bodyMedium" style={{ color: theme.colors.secondary }}>
+            Your schedule and upcoming tasks
+          </Text>
+        </Card.Content>
+      </Card>
+
+      <View style={{ padding: 16 }}>
+        <Banner
+          visible={true}
+          icon="calendar-clock"
+          style={{ marginBottom: 16 }}
+        >
+          Calendar view coming soon! You can still add tasks using the + button.
+        </Banner>
+
+        <Card>
+          <Card.Cover
+            source={{ uri: "https://picsum.photos/700/300?calendar" }}
+          />
+          <Card.Content style={{ marginTop: 16 }}>
+            <Text variant="titleMedium">Coming Features</Text>
+            <Text
+              variant="bodyMedium"
+              style={{ marginTop: 8, color: theme.colors.secondary }}
+            >
+              • View tasks by date{"\n"}• Set due dates and reminders{"\n"}•
+              Monthly/weekly calendar view{"\n"}• Recurring tasks
+            </Text>
+          </Card.Content>
+        </Card>
+      </View>
 
       <FloatingAddButton onAddTask={handleAddTask} />
     </View>
