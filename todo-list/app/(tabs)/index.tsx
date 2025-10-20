@@ -116,6 +116,23 @@ export default function TasksTab() {
     setEditText("");
   };
 
+  const deleteCurrentTask = () => {
+    if (!editingTask) return;
+
+    Alert.alert("Delete Task", "Are you sure you want to delete this task?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          deleteTask(editingTask.id);
+          setEditingTask(null);
+          setEditText("");
+        },
+      },
+    ]);
+  };
+
   const deleteAllTasks = () => {
     Alert.alert(
       "Delete All Tasks",
@@ -154,7 +171,7 @@ export default function TasksTab() {
           item={item}
           onToggle={toggleTask}
           onEdit={startEdit}
-          onDelete={deleteTask}
+          onComplete={deleteTask}
           onLongPress={drag}
           isActive={isActive}
         />
@@ -232,7 +249,7 @@ export default function TasksTab() {
                 marginTop: 8,
               }}
             >
-              Swipe left to delete
+              Swipe left to complete
             </Text>
           </View>
         ) : (
@@ -278,6 +295,13 @@ export default function TasksTab() {
               />
             </Dialog.Content>
             <Dialog.Actions>
+              <Button
+                onPress={deleteCurrentTask}
+                textColor={theme.colors.error}
+                style={{ marginRight: "auto" }}
+              >
+                Delete
+              </Button>
               <Button onPress={() => setEditingTask(null)}>Cancel</Button>
               <Button onPress={saveEdit}>Save</Button>
             </Dialog.Actions>
