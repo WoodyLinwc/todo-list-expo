@@ -86,15 +86,18 @@ export default function SwipeableTaskItem({
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
       onSwipeableOpen={(direction) => {
+        // Close immediately first
+        swipeableRef.current?.close();
+
         if (direction === "right") {
           // Swipe left to right = edit
-          onEdit(item);
+          setTimeout(() => {
+            onEdit(item);
+          }, 50);
         } else if (direction === "left") {
           // Swipe right to left = delete
           onDelete(item.id);
         }
-        // Close the swipeable immediately
-        swipeableRef.current?.close();
       }}
       overshootLeft={false}
       overshootRight={false}
@@ -106,8 +109,9 @@ export default function SwipeableTaskItem({
         style={{
           marginHorizontal: 8,
           marginVertical: 4,
-          opacity: isActive ? 0.8 : 1,
           elevation: isActive ? 8 : 2,
+          backgroundColor: theme.colors.surface,
+          transform: isActive ? [{ scale: 1.02 }] : [{ scale: 1 }],
         }}
         onLongPress={onLongPress}
       >
