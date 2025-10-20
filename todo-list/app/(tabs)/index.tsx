@@ -42,20 +42,7 @@ export default function TasksTab() {
       if (jsonValue != null) {
         setTasks(JSON.parse(jsonValue));
       } else {
-        const sampleTasks = [
-          {
-            id: "1",
-            title: "Tap the checkbox to complete a task",
-            completed: false,
-          },
-          {
-            id: "2",
-            title: "Swipe left on a task to see edit/delete actions",
-            completed: false,
-          },
-        ];
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(sampleTasks));
-        setTasks(sampleTasks);
+        setTasks([]);
       }
     } catch (error) {
       console.error("Error loading tasks:", error);
